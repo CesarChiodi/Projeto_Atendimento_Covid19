@@ -50,6 +50,7 @@ namespace Projeto_Atendimento_Covid19
         static void Main(string[] args)
         {
             Controle controleTotal = null;
+            Paciente paciente = null;
             bool flag = true;
            
             int opcaoMenu, camas = 0;
@@ -86,7 +87,7 @@ namespace Projeto_Atendimento_Covid19
                     case 3:
                         Console.Clear();
 
-                        controleTotal.Testagem();
+                        controleTotal.Testagem(paciente);
                         Console.Clear();
                         opcaoMenu = MenuPrincipal();
                         break;

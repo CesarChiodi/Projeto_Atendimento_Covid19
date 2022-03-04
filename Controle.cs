@@ -110,7 +110,7 @@ namespace Projeto_Atendimento_Covid19
                     Console.WriteLine("CHAMADA PREFERENCIAL EXECUTADA");
                     paciente = Preferencial.PopPrefer();
                     Triagem(paciente);
-                    DeleteData(paciente.CPF, paciente.Senha, "preferencial");
+                    RemoverData(paciente.CPF, paciente.Senha, "preferencial");
                     Next++;
                     flag = false;
                 }
@@ -119,7 +119,7 @@ namespace Projeto_Atendimento_Covid19
                     Console.WriteLine("CHAMADA COMUM EXECUTADA");
                     paciente = Comum.PopComum();
                     Triagem(paciente);
-                    DeleteData(paciente.CPF, paciente.Senha, "comum");
+                    RemoverData(paciente.CPF, paciente.Senha, "comum");
                     Next = 1;
                     flag = false;
                 }
@@ -193,19 +193,19 @@ namespace Projeto_Atendimento_Covid19
             {
 
                 Console.WriteLine("\nO PACIENTE NAO PODE SER TESTADO PELO HOSPITAL");
-                RecordData(paciente, "historico");
+                SalvarData(paciente, "historico");
             }
             else if (paciente.Sintomas >= 3 && paciente.Comorbidade >= 1 && paciente.Saturacao <= 88 && paciente.Temperatura > 36)
             {
                 Internacao.PushIntern(paciente);
-                RecordData(paciente, "internacao");
+                SalvarData(paciente, "internacao");
                 Console.WriteLine("\nO PACIENTE DEVE SER DESTINADO A FILA DE INTERNACAO");
             }
             else if ((paciente.Sintomas >= 0 || paciente.Comorbidade >= 0) && (paciente.Saturacao <= 90 || paciente.Temperatura > 36))
             {
                 Testagem(paciente);
                 Exame.PushExame(paciente);
-                RecordData(paciente, "exame");
+                SalvarData(paciente, "exame");
                 Console.WriteLine("\nO PACIENTE DEVE SER DESTIADO A FILA DE TESTAGEM");
             }
         }
@@ -231,8 +231,8 @@ namespace Projeto_Atendimento_Covid19
                 {
                     paciente.ResultadoExame = "NEGATIVO";
                     Console.WriteLine("O PACIENTE ESTA LIVRE DO VIRUS");
-                    RecordData(paciente, "historico");
-                    DeleteData(paciente.CPF, paciente.Senha, "exame");
+                    SalvarData(paciente, "historico");
+                    RemoverData(paciente.CPF, paciente.Senha, "exame");
 
                 }
                 else if (resultTeste == 1)
@@ -245,8 +245,8 @@ namespace Projeto_Atendimento_Covid19
                     {
                         Console.WriteLine("O PACIENTE DEVE SER INTERNADO");
                         Internacao.PushIntern(paciente);
-                        RecordData(paciente, "internacao");
-                        DeleteData(paciente.CPF, paciente.Senha, "exame");
+                        SalvarData(paciente, "internacao");
+                        RemoverData(paciente.CPF, paciente.Senha, "exame");
 
                         Exame.PopExame();
 
@@ -254,8 +254,8 @@ namespace Projeto_Atendimento_Covid19
                     else
                     {
                         Console.WriteLine("O PACIENTE DEVE MANTER QUARENTENA E EM CASOS DE AGRAVANTES DEVE RETORNAR A U.B.S.");
-                        RecordData(paciente, "Historico");
-                        DeleteData(paciente.CPF, paciente.Senha, "exame");
+                        SalvarData(paciente, "Historico");
+                        RemoverData(paciente.CPF, paciente.Senha, "exame");
 
                     }
                 }
@@ -275,8 +275,8 @@ namespace Projeto_Atendimento_Covid19
                 {
                     paciente.ResultadoExame = "NEGATIVO";
                     Console.WriteLine("O PACIENTE ESTA LIVRE DO VIRUS");
-                    RecordData(paciente, "historico");
-                    DeleteData(paciente.CPF, paciente.Senha, "exame");
+                    SalvarData(paciente, "historico");
+                    RemoverData(paciente.CPF, paciente.Senha, "exame");
 
                 }
                 else
@@ -289,16 +289,16 @@ namespace Projeto_Atendimento_Covid19
                     {
                         Console.WriteLine("O PACIENTE DEVE SER INTERNADO");
                         Internacao.PushIntern(paciente);
-                        RecordData(paciente, "internacao");
-                        DeleteData(paciente.CPF, paciente.Senha, "exame");
+                        SalvarData(paciente, "internacao");
+                        RemoverData(paciente.CPF, paciente.Senha, "exame");
 
                         Exame.PopExame();
                     }
                     else
                     {
                         Console.WriteLine("O PACIENTE DEVE MANTER QUARENTENA E EM CASOS DE AGRAVANTES DEVE RETORNAR A U.B.S.");
-                        RecordData(paciente, "historico");
-                        DeleteData(paciente.CPF, paciente.Senha, "exame");
+                        SalvarData(paciente, "historico");
+                        RemoverData(paciente.CPF, paciente.Senha, "exame");
 
                     }
                 }
@@ -337,8 +337,8 @@ namespace Projeto_Atendimento_Covid19
                         Internacao.PopCama(paciente);
                         paciente.Internacao = "ALTA";
                         Console.ReadKey();
-                        RecordData(paciente, "historico");
-                        DeleteData(paciente.CPF, paciente.Senha, "internacao");
+                        SalvarData(paciente, "historico");
+                        RemoverData(paciente.CPF, paciente.Senha, "internacao");
 
 
 
@@ -346,6 +346,8 @@ namespace Projeto_Atendimento_Covid19
                         {
                             paciente = Internacao.PopIntern();
                             Internacao.PushIntern(paciente);
+                            SalvarData(paciente, "internacao");
+
                         }
                     }
                     paciente = paciente.Proximo;
@@ -446,7 +448,7 @@ namespace Projeto_Atendimento_Covid19
             paciente.Saturacao = saturacao;
             paciente.Idade = idade;
 
-            RecordData(paciente, "internacao");
+            SalvarData(paciente, "internacao");
         }
 
         public void UploadData()
@@ -552,28 +554,28 @@ namespace Projeto_Atendimento_Covid19
                 paciente.Saturacao = float.Parse(data[11]);
                 Internacao.PushIntern(paciente);
             }
-            Console.WriteLine("\nerro de gravacao dos dados do paciente.");
-            Console.WriteLine("\nPressione ENTER para voltar ao menu");
+            Console.WriteLine("\nErro de gravacao dos dados do paciente.");
+            Console.WriteLine("\nPressione [ENTER] para voltar ao menu");
             Console.ReadKey();
         }
 
-        public void DeleteData(string cpf, string pass, string sector)
+        public void RemoverData(string cPF, string senha, string setor)
         {
             string exame = @"C:\UBS5by5\Exame\", internacao = @"C:\UBS5by5\Internacao\", historico = @"C:\UBS5by5\Historico\";
             string preferencial = @"C:\UBS5by5\Preferencial\", comum = @"C:\UBS5by5\Comum\";
             string data = "";
-            if (sector == "exame")
-                data = exame + pass + cpf + ".txt";
-            if (sector == "hosp")
-                data = internacao + pass + cpf + ".txt";
-            if (sector == "preferencial")
-                data = preferencial + pass + cpf + ".txt";
-            if (sector == "comum")
-                data = comum + pass + cpf + ".txt";
+            if (setor == "exame")
+                data = exame + senha + cPF + ".txt";
+            if (setor == "internar")
+                data = internacao + senha + cPF + ".txt";
+            if (setor == "preferencial")
+                data = preferencial + senha + cPF + ".txt";
+            if (setor == "comum")
+                data = comum + senha + cPF + ".txt";
             File.Delete(data);
         }
 
-        public void RecordData(Paciente pessoa, string sector)
+        public void SalvarData(Paciente pessoa, string sector)
         {
             string exame = @"C:\UBS5by5\Exame\", internacao = @"C:\UBS5by5\Internacao\", historico = @"C:\UBS5by5\Historico\";
             string preferencial = @"C:\UBS5by5\Preferencial\", comum = @"C:\UBS5by5\Comum\";
@@ -600,8 +602,8 @@ namespace Projeto_Atendimento_Covid19
                 }
                 catch
                 {
-                    Console.WriteLine("\nerro de gravacao dos dados do paciente.");
-                    Console.WriteLine("\nPressione ENTER para voltar ao menu");
+                    Console.WriteLine("\nErro de gravacao dos dados do paciente.");
+                    Console.WriteLine("\nPressione [ENTER] para voltar ao menu");
                     Console.ReadKey();
                 }
             }
@@ -628,8 +630,8 @@ namespace Projeto_Atendimento_Covid19
                 }
                 catch
                 {
-                    Console.WriteLine("\nerro de gravacao dos dados do paciente.");
-                    Console.WriteLine("\nPressione ENTER para voltar ao menu");
+                    Console.WriteLine("\nErro de gravacao dos dados do paciente.");
+                    Console.WriteLine("\nPressione [ENTER] para voltar ao menu");
                     Console.ReadKey();
                 }
             }
@@ -656,8 +658,8 @@ namespace Projeto_Atendimento_Covid19
                 }
                 catch
                 {
-                    Console.WriteLine("\nerro de gravacao dos dados do paciente.");
-                    Console.WriteLine("\nPressione ENTER para voltar ao menu");
+                    Console.WriteLine("\nErro de gravacao dos dados do paciente.");
+                    Console.WriteLine("\nPressione [ENTER] para voltar ao menu");
                     Console.ReadKey();
                 }
             }
